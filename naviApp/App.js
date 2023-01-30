@@ -1,68 +1,77 @@
 import React, { useState } from 'react';
-import { StatusBar, StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
 
 const App = () => {
   const [input1, setInput1] = useState(0);
   const [input2, setInput2] = useState(0);
   const [history, setHistory] = useState([]);
-  const [showHistory, setShowHistory] = useState(false);
 
-  sum = () => {
+  const sum = () => {
     result = parseFloat(input1) + parseFloat(input2);
     setHistory(prevHistory => [...prevHistory, `${input1} + ${input2} = ${result}`]);
     alert(result);
-  }
+  };
 
-  subtract = () => {
+  const subtract = () => {
     result = parseFloat(input1) - parseFloat(input2);
     setHistory(prevHistory => [...prevHistory, `${input1} - ${input2} = ${result}`]);
     alert(result);
-  }
+  };
 
-  toggleHistory = () => {
-    setShowHistory(prevShowHistory => !prevShowHistory);
-  }
+  const navigateToHistory = () => {
+    navigation.navigate('History');
+  };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder=" enter first number"
-        numeric
-        keyboardType={'numeric'}
-        style = {{width:200, borderColor: 'gray', borderWidth: 1}}
-        value = {input1}
-        onChangeText = {text => setInput1(text)}
-      />
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home">
+          {({ navigation }) => (
+            <View style={styles.container}>
+              <TextInput
+                placeholder="Enter first number"
+                numeric
+                keyboardType={'numeric'}
+                style={{ width: 200, borderColor: 'gray', borderWidth: 1 }}
+                value={input1}
+                onChangeText={text => setInput1(text)}
+              />
+              <TextInput
+                placeholder="Enter second number"
+                numeric
+                keyboardType={'numeric'}
+                style={{ width: 200, borderColor: 'gray', borderWidth: 1 }}
+                value={input2}
+                onChangeText={text => setInput2(text)}
+              />
+              <View style={{ flexDirection: 'row' }}>
+                <Button variant="outlined" title=" + " onPress={sum} />
+                <Text> </Text>
+                <Button variant="outlined" title=" - " onPress={subtract} />
+              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('History')}>
+                <Text> Show history </Text>
+              </TouchableOpacity>
+              <StatusBar style="auto" />
+            </View>
+          )}
+        </Stack.Screen>
 
-      <TextInput
-        placeholder=" enter second number"
-        numeric
-        keyboardType={'numeric'}
-        style = {{width:200, borderColor: 'gray', borderWidth: 1}}
-        value = {input2}
-        onChangeText = {text => setInput2(text)}
-      />
-      <View style = {{flexDirection: "row" }}>
-        <Button variant="outlined" title=" + " onPress={sum}></Button>
-        <Text>      </Text>
-        <Button variant="outlined" title=" - " onPress={subtract}></Button>
-      </View>
-
-      <View style={{ marginTop: 20 }}>
-        <Button title="Toggle History" onPress={toggleHistory} />
-      </View>
-      {showHistory && (
-        <View>
-          {history.map((item, index) => (
-            <Text key={index}>{item}</Text>
-          ))}
-        </View>
-      )}
-
-      <StatusBar style="auto" />
-
-    </View>
-
+        <Stack.Screen name="History">
+          {() => (
+            <View style={styles.container}>
+              {history.map((item, index) => (
+                <Text key={index}>{item}</Text>
+              ))}
+            </View>
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
@@ -71,8 +80,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    justifyContent: 'center'
+  }
+})
 
 export default App;
